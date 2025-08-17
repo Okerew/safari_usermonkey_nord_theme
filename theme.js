@@ -3,7 +3,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      2.0
 // @description  Applies a Nord color scheme for both light and dark modes based on system preference, excluding specified websites
-// @author       Okerew (modified by Gemini)
+// @author       Okerew 
 // @match        *://*/*
 // @grant        none
 // @run-at       document-start
