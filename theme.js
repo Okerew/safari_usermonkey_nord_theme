@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Auto nord dark theme
+// @name         Auto nord light/dark theme
 // @namespace    http://tampermonkey.net/
-// @version      1.0
-// @description  Applies a modified Nord color scheme strictly for dark mode preferred systems, excluding specified websites
-// @author       Okerew
+// @version      2.0
+// @description  Applies a Nord color scheme for both light and dark modes based on system preference, excluding specified websites
+// @author       Okerew (modified by Gemini)
 // @match        *://*/*
 // @grant        none
 // @run-at       document-start
@@ -20,202 +20,171 @@
   }
 
   const nordColors = {
-    nord0: "#1e1e1e", // Dark background
-    nord1: "#2d2d2d",
-    nord2: "#3b3b3b",
-    nord3: "#4a4a4a",
-    nord4: "#d4d4d4", // Light text
-    nord5: "#e3e3e3",
-    nord6: "#f5f5f5",
-    nord7: "#8FBCBB",
-    nord8: "#88C0D0", // Main accent color
-    nord9: "#81A1C1",
-    nord10: "#5E81AC",
-    nord11: "#BF616A",
-    nord12: "#D08770",
-    nord13: "#EBCB8B",
-    nord14: "#A3BE8C",
-    nord15: "#B48EAD",
+    dark_bg0: "#1e1e1e",
+    dark_bg1: "#2d2d2d",
+    dark_bg2: "#3b3b3b",
+    dark_bg3: "#4a4a4a",
+    dark_text0: "#f5f5f5",
+    dark_text1: "#e3e3e3",
+    dark_text2: "#d4d4d4",
+
+    light_bg0: "#ECEFF4",
+    light_bg1: "#FFFFFF",
+    light_bg2: "#E5E9F0",
+    light_bg3: "#D8DEE9",
+    light_text0: "#2E3440",
+    light_text1: "#3B4252",
+    light_text2: "#4C566A",
+
+    frost_green: "#8FBCBB",
+    frost_cyan: "#88C0D0",
+    frost_blue1: "#81A1C1",
+    frost_blue2: "#5E81AC",
+    aurora_red: "#BF616A",
+    aurora_orange: "#D08770",
+    aurora_yellow: "#EBCB8B",
+    aurora_green: "#A3BE8C",
+    aurora_purple: "#B48EAD",
   };
 
-  let isInitialized = false;
-  let styleElement = null;
-
-  // Function to detect if the system prefers dark mode
-  function detectTheme() {
-    if (
-      window.matchMedia &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-    ) {
-      return "dark";
-    }
-    return "light";
-  }
-
-  // Function to create and return the CSS for the Nord dark theme
-  function createNordCSS() {
+  function createNordDarkCSS() {
     return `
-      /* Nord Dark Theme Override */
       html, body {
-        background-color: ${nordColors.nord0} !important;
-        color: ${nordColors.nord4} !important;
+        background-color: ${nordColors.dark_bg0} !important;
+        color: ${nordColors.dark_text2} !important;
       }
-
-      /* Headers */
-      h1, h2, h3, h4, h5, h6 {
-        color: ${nordColors.nord6} !important;
-      }
-
-      /* Links */
-      a {
-        color: ${nordColors.nord8} !important;
-      }
-
-      a:hover {
-        color: ${nordColors.nord10} !important;
-      }
-
-      /* Form elements */
+      h1, h2, h3, h4, h5, h6 { color: ${nordColors.dark_text0} !important; }
+      a { color: ${nordColors.frost_cyan} !important; }
+      a:hover { color: ${nordColors.frost_blue2} !important; }
       input, textarea, select {
-        background-color: ${nordColors.nord1} !important;
-        color: ${nordColors.nord4} !important;
-        border-color: ${nordColors.nord3} !important;
+        background-color: ${nordColors.dark_bg1} !important;
+        color: ${nordColors.dark_text2} !important;
+        border-color: ${nordColors.dark_bg3} !important;
       }
-
       input:focus, textarea:focus, select:focus {
-        border-color: ${nordColors.nord8} !important;
-        box-shadow: 0 0 0 2px ${nordColors.nord8}40 !important;
+        border-color: ${nordColors.frost_cyan} !important;
+        box-shadow: 0 0 0 2px ${nordColors.frost_cyan}40 !important;
       }
-
-      /* Buttons */
       button, .button, .btn {
-        background-color: ${nordColors.nord8} !important;
-        color: ${nordColors.nord0} !important;
-        border-color: ${nordColors.nord8} !important;
+        background-color: ${nordColors.frost_cyan} !important;
+        color: ${nordColors.dark_bg0} !important;
+        border-color: ${nordColors.frost_cyan} !important;
       }
-
       button:hover, .button:hover, .btn:hover {
-        background-color: ${nordColors.nord10} !important;
+        background-color: ${nordColors.frost_blue2} !important;
       }
-
-      /* Code blocks */
       code, pre {
-        background-color: ${nordColors.nord1} !important;
-        color: ${nordColors.nord6} !important;
+        background-color: ${nordColors.dark_bg1} !important;
+        color: ${nordColors.dark_text0} !important;
       }
-
-      /* Tables */
-      table {
-        background-color: ${nordColors.nord1} !important;
-      }
-
+      table { background-color: ${nordColors.dark_bg1} !important; }
       th {
-        background-color: ${nordColors.nord2} !important;
-        color: ${nordColors.nord6} !important;
+        background-color: ${nordColors.dark_bg2} !important;
+        color: ${nordColors.dark_text0} !important;
       }
-
-      td {
-        border-color: ${nordColors.nord3} !important;
-      }
-
-      /* Navigation and menus */
-      nav, .nav, .navbar, .menu {
-        background-color: ${nordColors.nord1} !important;
-      }
-
-      /* Cards and containers */
+      td { border-color: ${nordColors.dark_bg3} !important; }
+      nav, .nav, .navbar, .menu { background-color: ${nordColors.dark_bg1} !important; }
       .card, .container, .box, .panel {
-        background-color: ${nordColors.nord1} !important;
-        border-color: ${nordColors.nord3} !important;
+        background-color: ${nordColors.dark_bg1} !important;
+        border-color: ${nordColors.dark_bg3} !important;
       }
-
-      /* Sidebar */
-      .sidebar, .aside {
-        background-color: ${nordColors.nord2} !important;
-      }
-
-      /* Highlights and selections */
+      .sidebar, .aside { background-color: ${nordColors.dark_bg2} !important; }
       ::selection {
-        background-color: ${nordColors.nord8}60 !important;
-        color: ${nordColors.nord0} !important;
+        background-color: ${nordColors.frost_cyan}60 !important;
+        color: ${nordColors.dark_text0} !important;
       }
-
-      /* Scrollbars (Webkit) */
-      ::-webkit-scrollbar {
-        background-color: ${nordColors.nord1} !important;
-      }
-
-      ::-webkit-scrollbar-thumb {
-        background-color: ${nordColors.nord3} !important;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: ${nordColors.nord8} !important;
-      }
+      ::-webkit-scrollbar { background-color: ${nordColors.dark_bg1} !important; }
+      ::-webkit-scrollbar-thumb { background-color: ${nordColors.dark_bg3} !important; }
+      ::-webkit-scrollbar-thumb:hover { background-color: ${nordColors.frost_cyan} !important; }
     `;
   }
 
-  function applyNordTheme() {
-    if (isInitialized || isWebsiteDisabled()) return;
+  function createNordLightCSS() {
+    return `
+      html, body {
+        background-color: ${nordColors.light_bg0} !important;
+        color: ${nordColors.light_text2} !important;
+      }
+      h1, h2, h3, h4, h5, h6 { color: ${nordColors.light_text0} !important; }
+      a { color: ${nordColors.frost_blue2} !important; }
+      a:hover { color: ${nordColors.frost_blue1} !important; }
+      input, textarea, select {
+        background-color: ${nordColors.light_bg1} !important;
+        color: ${nordColors.light_text1} !important;
+        border-color: ${nordColors.light_bg3} !important;
+      }
+      input:focus, textarea:focus, select:focus {
+        border-color: ${nordColors.frost_cyan} !important;
+        box-shadow: 0 0 0 2px ${nordColors.frost_cyan}40 !important;
+      }
+      button, .button, .btn {
+        background-color: ${nordColors.frost_cyan} !important;
+        color: ${nordColors.light_bg1} !important;
+        border-color: ${nordColors.frost_cyan} !important;
+      }
+      button:hover, .button:hover, .btn:hover {
+        background-color: ${nordColors.frost_blue2} !important;
+      }
+      code, pre {
+        background-color: ${nordColors.light_bg2} !important;
+        color: ${nordColors.light_text0} !important;
+      }
+      table { background-color: ${nordColors.light_bg1} !important; }
+      th {
+        background-color: ${nordColors.light_bg2} !important;
+        color: ${nordColors.light_text0} !important;
+      }
+      td { border-color: ${nordColors.light_bg3} !important; }
+      nav, .nav, .navbar, .menu { background-color: ${nordColors.light_bg1} !important; }
+      .card, .container, .box, .panel {
+        background-color: ${nordColors.light_bg1} !important;
+        border-color: ${nordColors.light_bg3} !important;
+      }
+      .sidebar, .aside { background-color: ${nordColors.light_bg2} !important; }
+      ::selection {
+        background-color: ${nordColors.frost_cyan}60 !important;
+        color: ${nordColors.light_text0} !important;
+      }
+      ::-webkit-scrollbar { background-color: ${nordColors.light_bg2} !important; }
+      ::-webkit-scrollbar-thumb { background-color: ${nordColors.light_bg3} !important; }
+      ::-webkit-scrollbar-thumb:hover { background-color: ${nordColors.frost_cyan} !important; }
+    `;
+  }
 
-    const detectedTheme = detectTheme();
-    if (detectedTheme !== "dark") {
-      console.log("Nord Theme: Light theme detected, no changes applied.");
+  function applyTheme() {
+    const existingStyle = document.getElementById("nord-theme-override");
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    document.documentElement.removeAttribute("data-nord-theme");
+
+    if (isWebsiteDisabled()) {
       return;
     }
 
-    console.log("Nord Theme: Applying dark theme...");
-    // Remove existing style if present
-    if (styleElement) {
-      styleElement.remove();
+    let cssToApply = "";
+    let themeName = "";
+
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      cssToApply = createNordDarkCSS();
+      themeName = "dark";
+    } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+      cssToApply = createNordLightCSS();
+      themeName = "light";
     }
 
-    // Create and inject CSS for dark theme only
-    styleElement = document.createElement("style");
-    styleElement.id = "nord-theme-override";
-    styleElement.textContent = createNordCSS();
-
-    // Insert style at the beginning of head or append to head/html
-    const head = document.head || document.getElementsByTagName("head")[0];
-    if (head) {
-      head.insertBefore(styleElement, head.firstChild);
-    } else {
-      document.documentElement.appendChild(styleElement);
+    if (cssToApply) {
+      const styleElement = document.createElement("style");
+      styleElement.id = "nord-theme-override";
+      styleElement.textContent = cssToApply;
+      (document.head || document.documentElement).prepend(styleElement);
+      document.documentElement.setAttribute("data-nord-theme", themeName);
     }
-
-    isInitialized = true;
-    // Add indicator showing which theme is active
-    document.documentElement.setAttribute("data-nord-theme", detectedTheme);
-    document.documentElement.setAttribute("data-nord-source", "macos-system");
   }
 
-  // Initialize when DOM is ready
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", applyNordTheme);
-  } else {
-    applyNordTheme();
-  }
+  applyTheme();
 
-  window.addEventListener("load", () => {
-    setTimeout(() => {
-      if (!isInitialized) {
-        applyNordTheme();
-      }
-    }, 500);
-  });
-
-  // Listen for system theme changes
-  if (window.matchMedia) {
-    const darkModeQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    const lightModeQuery = window.matchMedia("(prefers-color-scheme: light)");
-
-    const handleThemeChange = () => {
-      console.log("Nord Theme: System appearance changed, re-evaluating...");
-      isInitialized = false;
-      setTimeout(applyNordTheme, 100);
-    };
-
-    darkModeQuery.addListener(handleThemeChange);
-    lightModeQuery.addListener(handleThemeChange);
-  }
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", applyTheme);
 })();
