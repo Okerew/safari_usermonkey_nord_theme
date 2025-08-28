@@ -12,7 +12,14 @@
 (function () {
   "use strict";
 
-  const disabledWebsites = ["youtube.com", "x.com", "netflix.com", "reddit.com"];
+  const disabledWebsites = [
+    "youtube.com",
+    "x.com",
+    "netflix.com",
+    "reddit.com",
+      "dev.to",
+      "coderlegion.com",
+  ];
 
   function isWebsiteDisabled() {
     const hostname = window.location.hostname;
